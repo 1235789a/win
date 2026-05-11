@@ -1,0 +1,11 @@
+{
+  "budget_usd": 250,
+  "total_cost_usd": 0,
+  "analyzed_ok": 0,
+  "analyzed_err": 150,
+  "deep_ok": 0,
+  "deep_err": 0,
+  "p0": 0,
+  "p1": 0,
+  "duration_min": 0.3
+}

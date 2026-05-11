@@ -1,0 +1,18 @@
+﻿# deps
+node_modules/
+# build
+.next/
+dist/
+# logs
+dev.log
+*.log
+# sqlite wal
+*.db-shm
+*.db-wal
+# ide
+.vscode/
+.idea/
+# os
+Thumbs.db
+.DS_Store
+# secrets (交付包故意保留 .env.local，此行不放开)

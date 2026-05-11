@@ -1,0 +1,30 @@
+{
+  "name": "@mi/ai-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "本地通用 AI 模块：Gemini / Claude / OpenAI 统一入口，自带代理、429 重试、JSON 抽取、成本统计。任何 Node 项目加一行 file: 依赖就能用。",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.27.0",
+    "openai": ">=4.60.0"
+  },
+  "dependencies": {
+    "https-proxy-agent": "^7.0.6",
+    "undici": "^6.25.0"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.27.3",
+    "@types/node": "^20.12.0",
+    "openai": "^4.67.3",
+    "typescript": "^5.6.0"
+  }
+}
