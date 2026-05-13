@@ -9,6 +9,7 @@ import { fetchURL, detectPlatform } from "@/lib/fetcher";
 import { ANALYSIS_USER_PROMPT, SYSTEM_PROMPT } from "@/lib/prompts";
 import { clampScore, scoreToPriority } from "@/lib/scorer";
 import { insertOpportunity } from "@/lib/db";
+import { assignClusterForOpportunity } from "@/lib/clustering";
 import type {
   AnalysisResult,
   SourcePlatform,
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
           system: SYSTEM_PROMPT,
           user: ANALYSIS_USER_PROMPT({ platform, text }),
           temperature: t,
-          maxTokens: 16384,
+          maxTokens: 65536,
         })
       )
     );
@@ -118,6 +119,11 @@ export async function POST(req: NextRequest) {
     const has_blueprint = analysis.blueprint.trim().length > 200 ? 1 : 0;
 
     let saved_id: number | null = null;
+    let cluster_info: {
+      cluster_id: number;
+      action: "merged" | "created";
+      similarity: number;
+    } | null = null;
     if (save) {
       saved_id = insertOpportunity({
         source_platform: platform,
@@ -138,6 +144,22 @@ export async function POST(req: NextRequest) {
         cost_usd: totalUsage.cost_usd,
         favorite: 0,
       } satisfies Omit<Opportunity, "id" | "created_at">);
+
+      // Phase A: 实时聚类（失败不影响主流程）
+      try {
+        const r = await assignClusterForOpportunity(saved_id);
+        if (r) {
+          cluster_info = {
+            cluster_id: r.cluster_id,
+            action: r.action,
+            similarity: Number(r.max_similarity.toFixed(3)),
+          };
+          totalUsage.cost_usd += r.cost_usd;
+        }
+      } catch (err: any) {
+        // eslint-disable-next-line no-console
+        console.warn("[/api/analyze] cluster failed:", err?.message || err);
+      }
     }
 
     return NextResponse.json({
@@ -147,6 +169,7 @@ export async function POST(req: NextRequest) {
       priority,
       has_blueprint: !!has_blueprint,
       saved_id,
+      cluster: cluster_info,
       n: N,
       scores,
       usage: totalUsage,
