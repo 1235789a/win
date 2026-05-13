@@ -1,17 +1,51 @@
-// Dashboard（v2）：Can-Ship / Top Niches / Top Opportunities
+// Dashboard（v3）：Can-Ship / Top Niches / Top Opportunities / Why Now Top
 import Link from "next/link";
-import { getStats, listOpportunities } from "@/lib/db";
+import { getStats, listOpportunities, listClusters } from "@/lib/db";
+import { computeClusterTrend, computeWhyNow } from "@/lib/trends";
+import { computeCrossSignal } from "@/lib/cross-signal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { OpportunityCard } from "@/components/opportunity-card";
-import { Sparkles, Flame, ShieldCheck } from "lucide-react";
+import { Sparkles, Flame, ShieldCheck, TrendingUp, Zap } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default function DashboardPage() {
   const stats = getStats();
   const latest = listOpportunities({ limit: 5 });
+
+  // Top 5 by Why Now
+  const clusters = listClusters(50);
+  const whyNowTop = clusters
+    .map((c) => {
+      const trend = computeClusterTrend(c.id);
+      const wn = computeWhyNow(
+        trend,
+        c.tags_merged,
+        c.title_sample,
+        c.niche_sample
+      );
+      const cross = computeCrossSignal(c);
+      const final = Math.round(
+        cross.boosted_score * (0.6 + (0.4 * wn.score) / 100)
+      );
+      return {
+        id: c.id,
+        title: c.title_sample,
+        niche: c.niche_sample,
+        base: c.max_score,
+        why_now: wn.score,
+        label: wn.label,
+        final,
+        canonical_id: c.canonical_opportunity_id,
+        matched_catalyst: wn.matched_catalysts[0]?.name ?? null,
+        window_months: wn.window_months,
+      };
+    })
+    .filter((c) => c.label !== "无数据")
+    .sort((a, b) => b.final - a.final)
+    .slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -27,6 +61,12 @@ export default function DashboardPage() {
             <Button>
               <Sparkles className="h-4 w-4" />
               开始分析
+            </Button>
+          </Link>
+          <Link href="/trends">
+            <Button variant="outline">
+              <TrendingUp className="h-4 w-4" />
+              时机榜
             </Button>
           </Link>
           <Link href="/opportunities">
@@ -53,7 +93,63 @@ export default function DashboardPage() {
       <section className="grid md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Top Opportunities</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Why Now · 时机最好的机会
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {whyNowTop.length === 0 && (
+              <EmptyHint text="还没有趋势数据 · 运行 trend_snapshot.ts 或继续投喂数据" />
+            )}
+            {whyNowTop.map((w) => {
+              const emoji =
+                w.label === "爆发中"
+                  ? "🔥"
+                  : w.label === "升温中"
+                  ? "📈"
+                  : w.label === "稳定"
+                  ? "🟢"
+                  : "💤";
+              const finalColor =
+                w.final >= 85
+                  ? "text-red-300"
+                  : w.final >= 70
+                  ? "text-amber-300"
+                  : "text-emerald-300";
+              return (
+                <Link
+                  key={w.id}
+                  href="/trends"
+                  className="block p-2 rounded-md hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`text-lg font-bold tabular-nums ${finalColor} w-10 text-right shrink-0`}
+                    >
+                      {w.final}
+                    </span>
+                    <span className="text-xs shrink-0">{emoji}</span>
+                    <span className="flex-1 text-sm truncate">{w.title}</span>
+                    <span className="text-[10px] text-muted shrink-0">
+                      ~{w.window_months}mo
+                    </span>
+                  </div>
+                  {w.matched_catalyst && (
+                    <div className="ml-[60px] mt-0.5 text-[10px] text-amber-200 flex items-center gap-1 truncate">
+                      <Zap className="h-2.5 w-2.5 shrink-0" />
+                      {w.matched_catalyst}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Opportunities（原始分）</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1.5">
             {stats.top_opportunities.length === 0 && (
@@ -79,7 +175,9 @@ export default function DashboardPage() {
             ))}
           </CardContent>
         </Card>
+      </section>
 
+      <section>
         <Card>
           <CardHeader>
             <CardTitle>Top Niches（按海外华人细分）</CardTitle>

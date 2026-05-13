@@ -7,11 +7,13 @@ import {
   Sparkles,
   Flame,
   Github,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/trends", label: "Trends", icon: TrendingUp },
   { href: "/analyze", label: "Analyze", icon: Sparkles },
   { href: "/opportunities", label: "Opportunities", icon: Flame },
 ];
@@ -47,7 +49,7 @@ export function Sidebar() {
         })}
       </nav>
       <div className="p-3 border-t border-border text-[11px] text-muted flex items-center gap-2">
-        <Github className="h-3 w-3" /> local-first · v0.1
+        <Github className="h-3 w-3" /> local-first · v0.2
       </div>
     </aside>
   );
