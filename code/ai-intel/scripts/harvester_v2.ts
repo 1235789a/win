@@ -17,6 +17,7 @@ import type { RawItem, SourceAdapter } from "../src/lib/sources";
 import { twoStepAnalyze } from "../src/lib/two-step-analyze";
 import { insertOpportunity } from "../src/lib/db";
 import { assignClusterForOpportunity } from "../src/lib/clustering";
+import { recordMention } from "../src/lib/trends";
 import type { Opportunity } from "../src/lib/types";
 
 const MAX_ITEMS = Number(process.env.MAX_ITEMS ?? 30);
@@ -141,8 +142,22 @@ async function main() {
       } satisfies Omit<Opportunity, "id" | "created_at">);
 
       // 聚类（fire-and-forget 级别，失败不影响）
+      let clusterId: number | null = null;
       try {
-        await assignClusterForOpportunity(saved_id);
+        const cr = await assignClusterForOpportunity(saved_id);
+        clusterId = cr?.cluster_id ?? null;
+      } catch { /* silent */ }
+
+      // Phase C: 写 mention（趋势原料）
+      try {
+        recordMention({
+          cluster_id: clusterId,
+          opportunity_id: saved_id,
+          source_platform: item.platform,
+          mentioned_at: item.published_at ?? new Date().toISOString(),
+          engagement: item.engagement ?? 0,
+          text_sample: item.text.slice(0, 200),
+        });
       } catch { /* silent */ }
 
       if (r.priority === "P0") p0++;

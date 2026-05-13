@@ -10,6 +10,7 @@ import { ANALYSIS_USER_PROMPT, SYSTEM_PROMPT } from "@/lib/prompts";
 import { clampScore, scoreToPriority } from "@/lib/scorer";
 import { insertOpportunity } from "@/lib/db";
 import { assignClusterForOpportunity } from "@/lib/clustering";
+import { recordMention } from "@/lib/trends";
 import type {
   AnalysisResult,
   SourcePlatform,
@@ -159,6 +160,20 @@ export async function POST(req: NextRequest) {
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.warn("[/api/analyze] cluster failed:", err?.message || err);
+      }
+
+      // Phase C: 记录一次痛点目击（用于趋势计算）
+      try {
+        recordMention({
+          cluster_id: cluster_info?.cluster_id ?? null,
+          opportunity_id: saved_id,
+          source_platform: platform,
+          mentioned_at: new Date().toISOString(),
+          engagement: 0,
+          text_sample: text.slice(0, 200),
+        });
+      } catch (err: any) {
+        console.warn("[/api/analyze] mention failed:", err?.message || err);
       }
     }
 

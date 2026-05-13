@@ -144,6 +144,60 @@ function getDB(): Database.Database {
         "CREATE INDEX IF NOT EXISTS idx_opp_cluster ON opportunities(cluster_id)"
       );
     }
+
+    // ========== Phase C: 趋势 + Why Now ==========
+    db.exec(`
+      -- 每次看见一个痛点的原始 "目击记录"（包括被聚合成同一 cluster 的重复目击）
+      -- 这是趋势计算的唯一真相源
+      CREATE TABLE IF NOT EXISTS pain_mentions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cluster_id INTEGER,
+        opportunity_id INTEGER,
+        source_platform TEXT NOT NULL,
+        mentioned_at TEXT NOT NULL,      -- 原帖发布时间（不是爬取时间）
+        engagement INTEGER NOT NULL DEFAULT 0,
+        sentiment REAL,                  -- -1 ~ +1，可空
+        text_sample TEXT DEFAULT '',     -- 原文前 200 字，便于回溯
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY(cluster_id) REFERENCES clusters(id) ON DELETE CASCADE,
+        FOREIGN KEY(opportunity_id) REFERENCES opportunities(id) ON DELETE SET NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_mention_cluster_time ON pain_mentions(cluster_id, mentioned_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_mention_platform ON pain_mentions(source_platform, mentioned_at DESC);
+
+      -- 每日快照：按 cluster 聚合的 7/30/90 天提及量 + 增速
+      -- 每日定时任务写入，用于画趋势曲线
+      CREATE TABLE IF NOT EXISTS trend_snapshots (
+        date TEXT NOT NULL,              -- YYYY-MM-DD
+        cluster_id INTEGER NOT NULL,
+        mentions_7d INTEGER NOT NULL DEFAULT 0,
+        mentions_30d INTEGER NOT NULL DEFAULT 0,
+        mentions_90d INTEGER NOT NULL DEFAULT 0,
+        growth_7d_pct REAL NOT NULL DEFAULT 0,
+        growth_30d_pct REAL NOT NULL DEFAULT 0,
+        unique_sources INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY(date, cluster_id),
+        FOREIGN KEY(cluster_id) REFERENCES clusters(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS idx_snapshot_date ON trend_snapshots(date DESC);
+
+      -- 技术/政策催化剂：手工 + 自动维护的 "拐点事件"
+      -- 用于 Why Now 加分：一个老痛点 + 新催化剂 = 黄金窗口
+      CREATE TABLE IF NOT EXISTS tech_catalysts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,              -- "GPT-5 发布" / "Reddit API 涨价"
+        category TEXT NOT NULL,          -- model_release / platform_change / regulation / pricing / infra
+        happened_at TEXT NOT NULL,       -- ISO 日期
+        description TEXT DEFAULT '',
+        affected_keywords TEXT DEFAULT '', -- 逗号分隔，用于匹配 cluster.tags_merged
+        weight REAL NOT NULL DEFAULT 1.0,  -- 影响权重，0-1
+        enabled INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+      CREATE INDEX IF NOT EXISTS idx_catalyst_time ON tech_catalysts(happened_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_catalyst_enabled ON tech_catalysts(enabled);
+    `);
+
     g.__intelDb = db;
   }
   return g.__intelDb!;
@@ -603,4 +657,16 @@ export function getClusterStats(): { total: number; avg_members: number; largest
     avg_members: Number((r.avg_m ?? 0).toFixed(2)),
     largest: r.max_m ?? 0,
   };
+}
+
+
+
+// ---------- Phase C helpers (raw DB access for trends/catalysts) ----------
+
+/**
+ * 内部 helper：暴露给同仓库的 lib 用，确保 migration 已跑。
+ * 外部业务代码应走 insertOpportunity / listClusters 等高层 API。
+ */
+export function getRawDB(): Database.Database {
+  return getDB();
 }
