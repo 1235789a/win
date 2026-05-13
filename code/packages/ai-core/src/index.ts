@@ -106,6 +106,11 @@ export const DEFAULT_PRICING: Record<string, { in: number; out: number }> = {
   "gemini-2.5-flash-preview-05-20": { in: 0, out: 0 },
   "gemini-1.5-flash": { in: 0, out: 0 },
   "gemini-1.5-flash-8b": { in: 0, out: 0 },
+  // DeepSeek V4（2026 年 4 月发布）—— OpenAI 兼容，但 thinking 关法不一样
+  "deepseek-v4-flash": { in: 0.14, out: 0.56 },     // $0.14/$0.56 per 1M tokens
+  "deepseek-v4-pro": { in: 0.55, out: 2.2 },        // 估算值
+  "deepseek-chat": { in: 0.27, out: 1.1 },          // V3 兼容别名
+  "deepseek-reasoner": { in: 0.55, out: 2.2 },
 };
 const UNKNOWN_PRICE = { in: 15, out: 75 }; // 未知模型按 Opus 兜底（安全派）
 
@@ -116,16 +121,101 @@ function sleep(ms: number) {
 }
 
 /** 从原始响应里抽出最外层 JSON 对象。能正确处理 Gemini 常见的
- *  1) 裸 JSON  2) ```json 围栏  3) 在 string value 里嵌套 ```sql 围栏 */
+ *  1) 裸 JSON  2) ```json 围栏  3) 在 string value 里嵌套 ```sql 围栏
+ *  4) 输出被 max_tokens 截断（末尾没有 }）—— 截断时尝试修复使其可解析 */
 export function extractJSON(text: string): string {
   const first = text.indexOf("{");
   const last = text.lastIndexOf("}");
+
+  // 正常情况：有完整的 { ... }
   if (first !== -1 && last !== -1 && last > first) {
     return text.slice(first, last + 1);
   }
+
+  // 截断情况：有 { 但没有 }（或 } 在 { 之前——不太可能）
+  if (first !== -1) {
+    return repairTruncatedJSON(text.slice(first));
+  }
+
+  // ```json 围栏（完整）
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
   if (fenced) return fenced[1].trim();
+
+  // ```json 围栏（被截断，没有闭合的 ```）
+  const fencedOpen = text.match(/```(?:json)?\s*([\s\S]+)$/i);
+  if (fencedOpen) {
+    const inner = fencedOpen[1].trim();
+    const f = inner.indexOf("{");
+    const l = inner.lastIndexOf("}");
+    if (f !== -1 && l !== -1 && l > f) return inner.slice(f, l + 1);
+    if (f !== -1) return repairTruncatedJSON(inner.slice(f));
+    return inner;
+  }
+
   return text.trim();
+}
+
+/**
+ * 对被 max_tokens 截断的 JSON 做最大努力修复：
+ * - 截断字符串值（关闭引号，如果当前在字符串中间）
+ * - 补全所有未闭合的 { } [ ] 括号
+ * - 目标：让 score / title / niche 等靠前的字段能被 JSON.parse 解析
+ */
+function repairTruncatedJSON(partial: string): string {
+  // 找到最后一个完整的 key:value 对（以 , 或 { 或 [ 结尾的位置）
+  // 策略：从末尾往前找最后一个不在字符串里的逗号/花括号，然后截断到那里
+  let inString = false;
+  let escape = false;
+  const stack: string[] = []; // track { and [
+  let lastSafePos = 0; // 最后一个完整 token 后的位置
+
+  for (let i = 0; i < partial.length; i++) {
+    const ch = partial[i];
+    if (escape) { escape = false; continue; }
+    if (ch === '\\' && inString) { escape = true; continue; }
+    if (ch === '"') {
+      inString = !inString;
+      if (!inString) lastSafePos = i + 1; // 字符串关闭
+      continue;
+    }
+    if (inString) continue;
+    // 非字符串区域
+    if (ch === '{') { stack.push('}'); lastSafePos = i + 1; }
+    else if (ch === '[') { stack.push(']'); lastSafePos = i + 1; }
+    else if (ch === '}') { stack.pop(); lastSafePos = i + 1; }
+    else if (ch === ']') { stack.pop(); lastSafePos = i + 1; }
+    else if (ch === ',' || ch === ':') { lastSafePos = i + 1; }
+  }
+
+  // 从 partial 截到 lastSafePos（避免半个 token）
+  let repaired = partial.slice(0, lastSafePos);
+
+  // 如果截断发生在字符串中间，关闭它
+  if (inString) {
+    repaired += '"';
+  }
+
+  // 清理末尾多余的逗号
+  repaired = repaired.replace(/,\s*$/, '');
+
+  // 补全所有未闭合的括号
+  // 重新扫描 repaired 确定还差什么
+  const closeStack: string[] = [];
+  let inStr2 = false, esc2 = false;
+  for (let i = 0; i < repaired.length; i++) {
+    const ch = repaired[i];
+    if (esc2) { esc2 = false; continue; }
+    if (ch === '\\' && inStr2) { esc2 = true; continue; }
+    if (ch === '"') { inStr2 = !inStr2; continue; }
+    if (inStr2) continue;
+    if (ch === '{') closeStack.push('}');
+    else if (ch === '[') closeStack.push(']');
+    else if (ch === '}' || ch === ']') closeStack.pop();
+  }
+
+  // 按 LIFO 补全
+  repaired += closeStack.reverse().join('');
+  return repaired;
 }
 
 function resolveProxy(explicit?: string): string | undefined {
@@ -357,11 +447,24 @@ export class AIClient {
       };
     } else {
       const client = this.getOpenAI();
-      // Gemini 的 OpenAI 兼容端点不支持 response_format: json_object
+      // Provider 自动识别（按 baseURL 或 model 名）
       const isGemini = /gemini/i.test(model);
-      // gemini-2.5-* 默认开 thinking，会把 max_tokens 吃光只返回半截 JSON
-      // 除非显式关掉。2.0-* 无 thinking，加这个字段也无害。
+      // DeepSeek 识别：base_url 含 deepseek 或模型名以 deepseek- 开头
+      const isDeepSeek =
+        /deepseek/i.test(model) ||
+        /deepseek\.com/i.test(this._baseURL ?? "");
+      // 红线 1：Gemini 2.5-* 默认开 thinking，会把 max_tokens 吃光，必须关
       const isGeminiWithThinking = /gemini-2\.5/i.test(model);
+      // DeepSeek V4 也有 thinking，用 thinking:{type:"disabled"} 关（不同于 Gemini）
+      const isDeepSeekWithThinking =
+        isDeepSeek && /v4|reasoner/i.test(model);
+
+      // 这些端点对 response_format: json_object 不稳定 → 改用 prompt 指令
+      const skipResponseFormat = isGemini;
+
+      const jsonInstruction =
+        "\n\nCRITICAL OUTPUT RULES:\n1. Your ENTIRE response must be exactly one JSON object starting with { and ending with }.\n2. Do NOT wrap it in ```json fences.\n3. Do NOT write any prose before or after.\n4. Inside string values, if you include code, properly escape newlines as \\n and double-quotes as \\\".";
+
       const payload: any = {
         model,
         temperature,
@@ -371,20 +474,26 @@ export class AIClient {
             role: "system",
             content:
               opts.system +
-              (isGemini
-                ? "\n\nCRITICAL OUTPUT RULES:\n1. Your ENTIRE response must be exactly one JSON object starting with { and ending with }.\n2. Do NOT wrap it in ```json fences.\n3. Do NOT write any prose before or after.\n4. Inside string values, if you include code, properly escape newlines as \\n and double-quotes as \\\"."
-                : ""),
+              (isGemini || isDeepSeek ? jsonInstruction : ""),
           },
           { role: "user", content: opts.user },
         ],
       };
-      if (!isGemini) payload.response_format = { type: "json_object" };
-      // 关掉 Gemini 2.5 的 thinking：没它更快更省 token，回答质量也没差
+      if (!skipResponseFormat) payload.response_format = { type: "json_object" };
+      // 关掉 Gemini 2.5 的 thinking
       if (isGeminiWithThinking) payload.reasoning_effort = "none";
+      // 关掉 DeepSeek V4 的 thinking（不走 reasoning_effort，走专用字段）
+      if (isDeepSeekWithThinking) payload.thinking = { type: "disabled" };
+
+      const label = isDeepSeek
+        ? "deepseek.json"
+        : isGemini
+        ? "gemini.json"
+        : "openai.json";
 
       const resp = await this.withRetry(
         () => client.chat.completions.create(payload),
-        isGemini ? "gemini.json" : "openai.json"
+        label
       );
       raw = resp.choices[0]?.message?.content ?? "";
       const p = this.priceFor(model);
@@ -414,6 +523,7 @@ export class AIClient {
 // ─────────────────────── 全局默认客户端 + 便捷函数 ───────────────────────
 
 let _default: AIClient | null = null;
+const _named: Record<string, AIClient> = {};
 
 /** 按 process.env 创建（或复用）一个默认客户端 */
 export function getDefaultClient(): AIClient {
@@ -424,11 +534,79 @@ export function getDefaultClient(): AIClient {
 /** 重置默认客户端（热切换 env 时用） */
 export function resetDefaultClient() {
   _default = null;
+  for (const k of Object.keys(_named)) delete _named[k];
 }
 
 /** 工厂：显式配置 */
 export function createAIClient(opts: AIClientOptions = {}): AIClient {
   return new AIClient(opts);
+}
+
+/**
+ * 命名客户端：同一进程里共存多个 provider
+ * 用法：
+ *   registerClient("heavy", { provider: "openai", apiKey: "sk-...", baseURL: "https://api.deepseek.com", model: "deepseek-v4-flash" });
+ *   registerClient("cheap", { provider: "openai", apiKey: "AIza...", baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/", model: "gemini-2.5-flash-lite" });
+ *   await getClient("heavy").askJSON(...)
+ *
+ * 也支持按 env 自动注册（见 autoRegisterFromEnv）。
+ */
+export function registerClient(name: string, opts: AIClientOptions): AIClient {
+  const c = new AIClient(opts);
+  _named[name] = c;
+  return c;
+}
+
+export function getClient(name?: string): AIClient {
+  if (!name) return getDefaultClient();
+  const c = _named[name];
+  if (c) return c;
+  // 名字没注册过 → 回退到默认
+  return getDefaultClient();
+}
+
+export function listClients(): string[] {
+  return Object.keys(_named);
+}
+
+/**
+ * 按约定 env 变量自动注册一组命名客户端：
+ *
+ *   AI_<NAME>_PROVIDER      anthropic / openai
+ *   AI_<NAME>_API_KEY
+ *   AI_<NAME>_BASE_URL      可选（仅 openai）
+ *   AI_<NAME>_MODEL
+ *
+ * 例：
+ *   AI_HEAVY_PROVIDER=openai
+ *   AI_HEAVY_API_KEY=sk-...
+ *   AI_HEAVY_BASE_URL=https://api.deepseek.com
+ *   AI_HEAVY_MODEL=deepseek-v4-flash
+ *
+ *   AI_CHEAP_PROVIDER=openai
+ *   AI_CHEAP_API_KEY=AIza...
+ *   AI_CHEAP_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+ *   AI_CHEAP_MODEL=gemini-2.5-flash-lite
+ */
+export function autoRegisterFromEnv(): string[] {
+  const registered: string[] = [];
+  const pattern = /^AI_([A-Z0-9_]+)_PROVIDER$/;
+  for (const key of Object.keys(process.env)) {
+    const m = key.match(pattern);
+    if (!m) continue;
+    const NAME = m[1];
+    const lower = NAME.toLowerCase();
+    // 保留字段跳过
+    if (lower === "provider") continue;
+    const provider = process.env[`AI_${NAME}_PROVIDER`] as Provider;
+    const apiKey = process.env[`AI_${NAME}_API_KEY`];
+    const baseURL = process.env[`AI_${NAME}_BASE_URL`];
+    const model = process.env[`AI_${NAME}_MODEL`];
+    if (!apiKey || !model) continue;
+    registerClient(lower, { provider, apiKey, baseURL, model });
+    registered.push(lower);
+  }
+  return registered;
 }
 
 /** 便捷：用默认客户端问一段文本 */
@@ -444,4 +622,118 @@ export function askJSON<T = unknown>(opts: AskOptions) {
 /** 便捷：当前默认 provider */
 export function currentProvider(): Provider {
   return getDefaultClient().provider;
+}
+
+// ─────────────────────── Embedding ───────────────────────
+
+export interface EmbedOptions {
+  texts: string[];
+  model?: string;
+  apiKey?: string;
+  baseURL?: string;
+  /** "gemini" | "openai"（对应的 embedding 端点）；不传则按 baseURL/model 自动识别 */
+  provider?: "gemini" | "openai";
+}
+
+export interface EmbedResult {
+  embeddings: number[][];
+  model: string;
+  tokens: number;
+  cost_usd: number;
+}
+
+const EMBED_PRICING: Record<string, { per_1m: number }> = {
+  "text-embedding-3-small": { per_1m: 0.02 },
+  "text-embedding-3-large": { per_1m: 0.13 },
+  "gemini-embedding-001": { per_1m: 0 }, // 免费档
+  "text-embedding-004": { per_1m: 0 },
+  "embedding-001": { per_1m: 0 },
+};
+
+/**
+ * 批量计算 embedding。自动识别 Gemini / OpenAI 端点。
+ * Gemini 的 embedContent 端点走原生 REST，不走 OpenAI-compat（compat 模式不支持 embedding）。
+ */
+export async function embed(opts: EmbedOptions): Promise<EmbedResult> {
+  const apiKey =
+    opts.apiKey ??
+    process.env.EMBED_API_KEY ??
+    process.env.OPENAI_API_KEY ??
+    "";
+  const baseURL = opts.baseURL ?? process.env.EMBED_BASE_URL;
+  const model = opts.model ?? process.env.EMBED_MODEL ?? "gemini-embedding-001";
+  const provider =
+    opts.provider ??
+    (/gemini|googleapi/i.test(baseURL ?? "") || /^gemini|embedding-001|text-embedding-004/i.test(model)
+      ? "gemini"
+      : "openai");
+
+  if (provider === "gemini") {
+    // Gemini 原生 REST embedContent（OpenAI-compat 模式不支持 embedding）
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:batchEmbedContents?key=${apiKey}`;
+    const body = {
+      requests: opts.texts.map((t) => ({
+        model: `models/${model}`,
+        content: { parts: [{ text: t }] },
+      })),
+    };
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      throw new Error(
+        `[ai-core.embed] Gemini ${res.status}: ${await res.text()}`
+      );
+    }
+    const j: any = await res.json();
+    const embeddings: number[][] = (j.embeddings ?? []).map((e: any) => e.values ?? []);
+    if (embeddings.length !== opts.texts.length) {
+      throw new Error(
+        `[ai-core.embed] Gemini 返回 ${embeddings.length} 条，但请求了 ${opts.texts.length} 条`
+      );
+    }
+    const tokens = opts.texts.reduce((a, t) => a + Math.ceil(t.length / 4), 0);
+    return { embeddings, model, tokens, cost_usd: 0 };
+  }
+
+  // OpenAI / 兼容
+  const url = `${baseURL ?? "https://api.openai.com/v1"}/embeddings`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ model, input: opts.texts }),
+  });
+  if (!res.ok) {
+    throw new Error(
+      `[ai-core.embed] OpenAI ${res.status}: ${await res.text()}`
+    );
+  }
+  const j: any = await res.json();
+  const embeddings = (j.data ?? [])
+    .sort((a: any, b: any) => a.index - b.index)
+    .map((d: any) => d.embedding as number[]);
+  const tokens = j.usage?.total_tokens ?? 0;
+  const price = EMBED_PRICING[model]?.per_1m ?? 0;
+  const cost_usd = (tokens * price) / 1_000_000;
+  return { embeddings, model, tokens, cost_usd };
+}
+
+/** 工具：余弦相似度 */
+export function cosineSimilarity(a: number[], b: number[]): number {
+  const n = Math.min(a.length, b.length);
+  let dot = 0,
+    na = 0,
+    nb = 0;
+  for (let i = 0; i < n; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+  if (na === 0 || nb === 0) return 0;
+  return dot / (Math.sqrt(na) * Math.sqrt(nb));
 }
