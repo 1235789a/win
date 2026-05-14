@@ -5,12 +5,18 @@ import type { SourceAdapter, RawItem, HarvestOptions } from "./base";
 
 const DEFAULT_KEYWORDS = [
   "automation tool",
-  "tired of manually",
-  "need a script",
-  "scraping solution",
+  "chrome extension developer",
   "workflow automation",
-  "chrome extension",
-  "saas mvp",
+  "data scraping bot",
+  "ai chatbot integration",
+  "shopify app developer",
+  "notion integration",
+  "slack bot",
+  "email automation",
+  "pdf to structured data",
+  "api integration",
+  "browser extension",
+  "whatsapp bot",
 ];
 
 function parseAtomXML(xml: string): { title: string; link: string; summary: string; published: string }[] {

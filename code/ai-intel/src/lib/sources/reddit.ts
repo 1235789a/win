@@ -13,6 +13,13 @@ const DEFAULT_SUBS = [
   "freelance",
   "webdev",
   "smallbusiness",
+  "slavelabour",
+  "forhire",
+  "digitalnomad",
+  "selfhosted",
+  "sideproject",
+  "nocode",
+  "Upwork",
 ];
 
 async function fetchSubreddit(

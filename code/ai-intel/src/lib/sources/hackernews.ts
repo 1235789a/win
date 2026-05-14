@@ -10,7 +10,7 @@ export class HackerNewsSource implements SourceAdapter {
 
   async harvest(opts: HarvestOptions = {}): Promise<RawItem[]> {
     const limit = opts.limit ?? 30;
-    const maxAgeHours = opts.maxAgeHours ?? 48;
+    const maxAgeHours = opts.maxAgeHours ?? 72;
 
     const since = Math.floor(Date.now() / 1000) - maxAgeHours * 3600;
     const tags = "(show_hn,ask_hn,story)";
