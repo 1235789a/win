@@ -35,7 +35,8 @@ const STEP1_SYSTEM = `你是一名独立产品创始人。快速判断一条帖�
   "score": 0-100,
   "tags": ["tag1","tag2","tag3"],
   "pain_summary": "一句话概括痛点（30-60 字）",
-  "build_once_sell_infinite": true/false
+  "build_once_sell_infinite": true/false,
+  "seo_keyword": "如果用户要搜这个工具，最可能用的英文搜索词（2-4个单词，如 ai resume builder）"
 }`;
 
 const STEP1_USER = (platform: string, text: string) =>
@@ -77,6 +78,7 @@ export interface Step1Result {
   tags: string[];
   pain_summary: string;
   build_once_sell_infinite: boolean;
+  seo_keyword: string;
   usage: { tokens_in: number; tokens_out: number; cost_usd: number };
 }
 
@@ -89,6 +91,8 @@ export interface TwoStepResult {
   tags: string[];
   blueprint: string;
   priority: string;
+  seo_keyword: string;
+  seo?: { keyword: string; score: number; difficulty: string; tool_sites: number; has_ads: boolean; long_tail: string[] } | null;
   usage: { tokens_in: number; tokens_out: number; cost_usd: number };
 }
 
@@ -107,6 +111,7 @@ export async function quickScore(
     tags?: string[];
     pain_summary?: string;
     build_once_sell_infinite?: boolean;
+    seo_keyword?: string;
   }>({
     system: STEP1_SYSTEM,
     user: STEP1_USER(platform, text),
@@ -124,6 +129,7 @@ export async function quickScore(
       : [],
     pain_summary: (r.data.pain_summary ?? "").toString().slice(0, 200),
     build_once_sell_infinite: !!r.data.build_once_sell_infinite,
+    seo_keyword: (r.data.seo_keyword ?? "").toString().slice(0, 60),
     usage: {
       tokens_in: r.usage.tokens_in,
       tokens_out: r.usage.tokens_out,
@@ -182,6 +188,25 @@ export async function twoStepAnalyze(
 
   const totalUsage = { ...s1.usage };
   let blueprint = "";
+  let seoResult: TwoStepResult["seo"] = null;
+
+  // SEO 分析（仅 score>=60 且有 seo_keyword 时跑，避免浪费 SerpAPI 额度）
+  if (s1.score >= 60 && s1.seo_keyword && process.env.SERPAPI_KEY) {
+    try {
+      const { analyzeKeywordSEO } = await import("@/lib/seo-score");
+      const seo = await analyzeKeywordSEO(s1.seo_keyword);
+      if (seo) {
+        seoResult = {
+          keyword: seo.keyword,
+          score: seo.seo_score,
+          difficulty: seo.difficulty,
+          tool_sites: seo.tool_sites_in_top10,
+          has_ads: seo.has_ads,
+          long_tail: seo.suggested_long_tail,
+        };
+      }
+    } catch {}
+  }
 
   // Step 2（仅高分 + 不跳过）
   if (s1.score >= threshold && !opts?.skipBlueprint) {
@@ -212,6 +237,8 @@ export async function twoStepAnalyze(
     tags: s1.tags,
     blueprint,
     priority: scoreToPriority(s1.score),
+    seo_keyword: s1.seo_keyword,
+    seo: seoResult,
     usage: totalUsage,
   };
 }

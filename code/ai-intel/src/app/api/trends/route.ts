@@ -7,7 +7,7 @@
 //   - final         : 综合优先级（base 和 why_now 的加权组合）
 
 import { NextRequest, NextResponse } from "next/server";
-import { listClusters } from "@/lib/db";
+import { listClusters, getOpportunity } from "@/lib/db";
 import { computeClusterTrend, computeWhyNow } from "@/lib/trends";
 import { computeCrossSignal } from "@/lib/cross-signal";
 
@@ -32,6 +32,20 @@ export async function GET(req: NextRequest) {
       const finalScore = Math.round(
         cross.boosted_score * (0.6 + 0.4 * whyNow.score / 100)
       );
+
+      // SEO data from canonical opportunity's analysis_json
+      let seo: { keyword: string; score: number; difficulty: string; tool_sites: number; has_ads: boolean } | null = null;
+      if (c.canonical_opportunity_id) {
+        try {
+          const opp = getOpportunity(c.canonical_opportunity_id);
+          if (opp) {
+            const json = JSON.parse(opp.analysis_json || "{}");
+            if (json.seo?.score) {
+              seo = { keyword: json.seo_keyword || json.seo.keyword || "", score: json.seo.score, difficulty: json.seo.difficulty || "medium", tool_sites: json.seo.tool_sites ?? 0, has_ads: json.seo.has_ads ?? false };
+            }
+          }
+        } catch {}
+      }
 
       return {
         cluster_id: c.id,
@@ -73,6 +87,7 @@ export async function GET(req: NextRequest) {
           })),
           window_months: whyNow.window_months,
         },
+        seo,
         final_score: finalScore,
       };
     });
