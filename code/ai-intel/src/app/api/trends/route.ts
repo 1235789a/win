@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { listClusters, getOpportunity } from "@/lib/db";
 import { computeClusterTrend, computeWhyNow } from "@/lib/trends";
 import { computeCrossSignal } from "@/lib/cross-signal";
+import { computeFinalScore } from "@/lib/final-score";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,11 +29,6 @@ export async function GET(req: NextRequest) {
       const whyNow = computeWhyNow(trend, c.tags_merged, c.title_sample, c.niche_sample);
       const cross = computeCrossSignal(c);
 
-      // final_score = base * (0.6 + 0.4 * why_now/100)
-      const finalScore = Math.round(
-        cross.boosted_score * (0.6 + 0.4 * whyNow.score / 100)
-      );
-
       // SEO data from canonical opportunity's analysis_json
       let seo: { keyword: string; score: number; difficulty: string; tool_sites: number; has_ads: boolean } | null = null;
       if (c.canonical_opportunity_id) {
@@ -46,6 +42,22 @@ export async function GET(req: NextRequest) {
           }
         } catch {}
       }
+
+      // 四维加权评分
+      const finalCalc = computeFinalScore({
+        pain_score: c.max_score,
+        seo_score: seo?.score ?? null,
+        seo_tool_sites: seo?.tool_sites ?? null,
+        why_now_score: whyNow.score,
+        has_catalysts: whyNow.matched_catalysts.length > 0,
+        has_trends_signal: false,
+        cross_source_count: cross.source_count,
+        has_upwork: cross.has_upwork,
+        member_count: c.member_count,
+        has_ads: seo?.has_ads ?? false,
+        is_grey: false,
+        single_source_only: cross.source_count <= 1,
+      });
 
       return {
         cluster_id: c.id,
@@ -88,7 +100,17 @@ export async function GET(req: NextRequest) {
           window_months: whyNow.window_months,
         },
         seo,
-        final_score: finalScore,
+        final: {
+          score: finalCalc.final_score,
+          pain: finalCalc.pain_weighted,
+          seo_w: finalCalc.seo_weighted,
+          timing: finalCalc.timing_weighted,
+          biz: finalCalc.biz_weighted,
+          penalties: finalCalc.penalties,
+          verdict: finalCalc.verdict,
+          verdict_reason: finalCalc.verdict_reason,
+        },
+        final_score: finalCalc.final_score,
       };
     });
 
