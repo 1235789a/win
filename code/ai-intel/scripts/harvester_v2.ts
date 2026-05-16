@@ -16,6 +16,7 @@ import {
   HackerNewsSource, RedditSource, UpworkRSSSource,
   GitHubTrendingSource, ProductHuntSource, BlackHatWorldSource,
   V2EXSource, IndieHackersSource, DevToSource, NitterSource,
+  GoogleTrendsSource,
 } from "../src/lib/sources";
 import type { RawItem, SourceAdapter } from "../src/lib/sources";
 import { twoStepAnalyze } from "../src/lib/two-step-analyze";
@@ -27,7 +28,7 @@ import type { Opportunity } from "../src/lib/types";
 const MAX_ITEMS = Number(process.env.MAX_ITEMS ?? 30);
 const CONCURRENCY = Number(process.env.CONCURRENCY ?? 2);
 const SKIP_BLUEPRINT = process.env.SKIP_BLUEPRINT === "1";
-const SOURCES_STR = process.env.SOURCES ?? "hn,reddit,upwork,github,producthunt,bhw,v2ex,indiehackers,devto,twitter";
+const SOURCES_STR = process.env.SOURCES ?? "hn,reddit,upwork,github,producthunt,bhw,v2ex,indiehackers,devto,twitter,trends";
 
 const t0 = Date.now();
 
@@ -45,6 +46,7 @@ function getSources(): SourceAdapter[] {
   if (enabled.includes("indiehackers")) sources.push(new IndieHackersSource());
   if (enabled.includes("devto")) sources.push(new DevToSource());
   if (enabled.includes("twitter")) sources.push(new NitterSource());
+  if (enabled.includes("trends")) sources.push(new GoogleTrendsSource());
   return sources;
 }
 
