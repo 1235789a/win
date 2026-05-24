@@ -3,6 +3,9 @@
  * 测试数据源 7-11: V2EX, IndieHackers, BlackHatWorld, Nitter, Google Trends
  */
 
+import { config as loadEnv } from "dotenv";
+loadEnv({ path: ".env.local" });
+
 console.log("\n" + "=".repeat(70));
 console.log("🔍 测试数据源 7-11");
 console.log("=".repeat(70) + "\n");
