@@ -35,7 +35,7 @@ function needsRebuild(db: Database.Database): boolean {
   return !hasCost || !hasBlueprint;
 }
 
-function getDB(): Database.Database {
+export function getDB(): Database.Database {
   if (!g.__intelDb) {
     let db = new Database(DB_PATH);
     if (needsRebuild(db)) {
