@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yansu - Workflow Automation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+        }
+
+        #yansu-widget {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .yansu-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .yansu-header {
+            margin-bottom: 20px;
+        }
+
+        .yansu-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .yansu-subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .yansu-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .yansu-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s;
+        }
+
+        .yansu-textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .yansu-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .yansu-select {
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .yansu-select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .yansu-button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .yansu-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .yansu-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .yansu-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .yansu-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .yansu-result {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .yansu-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .yansu-code-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .yansu-copy-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #475569;
+            transition: background 0.2s;
+        }
+
+        .yansu-copy-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .yansu-code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .yansu-suggestions {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border: 1px solid #86efac;
+        }
+
+        .yansu-suggestions-title {
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .yansu-suggestions-list {
+            list-style: disc;
+            margin-left: 20px;
+            color: #166534;
+            font-size: 13px;
+        }
+
+        .yansu-suggestions-list li {
+            margin: 4px 0;
+        }
+
+        .yansu-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .yansu-credits {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .yansu-credits-label {
+            color: #64748b;
+        }
+
+        .yansu-credits-value {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .yansu-buy-btn {
+            background: white;
+            border: 2px solid #4f46e5;
+            color: #4f46e5;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .yansu-buy-btn:hover {
+            background: #4f46e5;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="yansu-widget">
+        <div class="yansu-card">
+            <div class="yansu-header">
+                <h2 class="yansu-title">Yansu Workflow Generator</h2>
+                <p class="yansu-subtitle">Describe your task and get production-ready automation code</p>
+            </div>
+
+            <div class="yansu-credits">
+                <span class="yansu-credits-label">Credits:</span>
+                <span class="yansu-credits-value" id="yansu-credits">50</span>
+                <button class="yansu-buy-btn" onclick="yansuShowPricing()">Buy More</button>
+            </div>
+
+            <div class="yansu-form" style="margin-top: 16px;">
+                <textarea
+                    id="yansu-description"
+                    class="yansu-textarea"
+                    placeholder="Example: Log into Gmail and download the latest attachment from my inbox"
+                ></textarea>
+
+                <div class="yansu-options">
+                    <select id="yansu-language" class="yansu-select">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                    </select>
+
+                    <select id="yansu-framework" class="yansu-select">
+                        <option value="playwright">Playwright</option>
+                        <option value="puppeteer">Puppeteer</option>
+                    </select>
+                </div>
+
+                <button id="yansu-generate" class="yansu-button" onclick="yansuGenerate()">
+                    Generate Code
+                </button>
+            </div>
+
+            <div id="yansu-loading" class="yansu-loading">
+                <div class="yansu-spinner"></div>
+                <p style="color: #64748b;">Generating your workflow...</p>
+            </div>
+
+            <div id="yansu-error" class="yansu-error"></div>
+
+            <div id="yansu-result" class="yansu-result">
+                <div class="yansu-result-header">
+                    <span class="yansu-code-title">Generated Code</span>
+                    <button class="yansu-copy-btn" onclick="yansuCopyCode()">Copy Code</button>
+                </div>
+                <pre id="yansu-code" class="yansu-code"></pre>
+
+                <div id="yansu-suggestions" class="yansu-suggestions" style="display: none;">
+                    <div class="yansu-suggestions-title">Suggestions:</div>
+                    <ul id="yansu-suggestions-list" class="yansu-suggestions-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const YANSU_API_KEY = 'your_api_key_here';
+        const YANSU_API_URL = 'https://api.yansu.io/v1';
+
+        // State
+        let currentWorkflowId = null;
+        let pollInterval = null;
+
+        // Generate workflow
+        async function yansuGenerate() {
+            const description = document.getElementById('yansu-description').value;
+            const language = document.getElementById('yansu-language').value;
+            const framework = document.getElementById('yansu-framework').value;
+            const btn = document.getElementById('yansu-generate');
+            const loading = document.getElementById('yansu-loading');
+            const result = document.getElementById('yansu-result');
+            const error = document.getElementById('yansu-error');
+
+            if (!description.trim()) {
+                showError('Please enter a description');
+                return;
+            }
+
+            btn.disabled = true;
+            result.style.display = 'none';
+            error.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch(`${YANSU_API_URL}/workflows/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${YANSU_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        description,
+                        language,
+                        framework,
+                        detailed: true
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || data.error);
+                }
+
+                currentWorkflowId = data.workflow_id;
+
+                // Poll for results
+                pollForResult(data.status_url);
+
+            } catch (err) {
+                loading.style.display = 'none';
+                btn.disabled = false;
+                showError(err.message || 'Failed to generate workflow');
+            }
+        }
+
+        // Poll for results
+        async function pollForResult(statusUrl) {
+            const loading = document.getElementById('yansu-loading');
+            const result = document.getElementById('yansu-result');
+            const btn = document.getElementById('yansu-generate');
+            const error = document.getElementById('yansu-error');
+
+            let attempts = 0;
+            const maxAttempts = 60;
+
+            pollInterval = setInterval(async () => {
+                attempts++;
+
+                try {
+                    const response = await fetch(statusUrl, {
+                        headers: {
+                            'Authorization': `Bearer ${YANSU_API_KEY}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'completed') {
+                        clearInterval(pollInterval);
+                        loading.style.display = 'none';
+                        btn.disabled = false;
+
+                        // Update credits display
+                        if (data.cost) {
+                            document.getElementById('yansu-credits').textContent = data.cost.credits_remaining;
+                        }
+
+                        // Show result
+                        document.getElementById('yansu-code').textContent = data.result.code;
+
+                        // Show suggestions
+                        if (data.result.suggestions && data.result.suggestions.length > 0) {
+                            const suggestionsEl = document.getElementById('yansu-suggestions');
+                            const listEl = document.getElementById('yansu-suggestions-list');
+                            listEl.innerHTML = data.result.suggestions.map(s => `<li>${s}</li>`).join('');
+                            suggestionsEl.style.display = 'block';
+                        }
+
+                        result.style.display = 'block';
+
+                    } else if (data.status === 'failed') {
+                        clearInterval(pollInterval);
+                        loading.style.display = 'none';
+                        btn.disabled = false;
+                        showError(data.error || 'Generation failed');
+
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(pollInterval);
+                        loading.style.display = 'none';
+                        btn.disabled = false;
+                        showError('Request timed out. Please try again.');
+                    }
+
+                } catch (err) {
+                    console.error('Poll error:', err);
+                }
+            }, 1000);
+        }
+
+        // Copy code
+        function yansuCopyCode() {
+            const code = document.getElementById('yansu-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.yansu-copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = originalText, 2000);
+            });
+        }
+
+        // Show error
+        function showError(message) {
+            const error = document.getElementById('yansu-error');
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+
+        // Show pricing
+        async function yansuShowPricing() {
+            try {
+                const response = await fetch(`${YANSU_API_URL}/payments/packages`);
+                const data = await response.json();
+
+                let message = 'Available Packages:\n\n';
+                data.packages.forEach(pkg => {
+                    message += `• ${pkg.name}: $${pkg.price} for ${pkg.credits} credits\n`;
+                });
+                message += '\nWould you like to purchase a package?';
+
+                if (confirm(message)) {
+                    // Redirect to checkout or show checkout modal
+                    window.open('https://yansu.io/pricing', '_blank');
+                }
+
+            } catch (err) {
+                console.error('Failed to get packages:', err);
+            }
+        }
+
+        // Initialize
+        async function initYansu() {
+            try {
+                const response = await fetch(`${YANSU_API_URL}/account/balance`, {
+                    headers: {
+                        'Authorization': `Bearer ${YANSU_API_KEY}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('yansu-credits').textContent = data.credits_remaining;
+                }
+            } catch (err) {
+                console.error('Failed to get balance:', err);
+            }
+        }
+
+        // Auto-initialize
+        initYansu();
+    </script>
+</body>
+</html>
