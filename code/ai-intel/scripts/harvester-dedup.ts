@@ -10,7 +10,7 @@ import {
   type RawItem,
 } from "../src/lib/sources";
 import { twoStepAnalyze } from "../src/lib/two-step-analyze";
-import { insertOpportunity } from "../src/lib/db";
+import { insertOpportunity, getDB } from "../src/lib/db";
 import Database from "better-sqlite3";
 import path from "node:path";
 import fs from "node:fs";
@@ -26,6 +26,36 @@ function getDBDirect(): Database.Database {
     db.pragma("journal_mode = WAL");
   }
   return db;
+}
+
+// 初始化数据库表（如果不存在）
+function initDB() {
+  const database = getDBDirect();
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS opportunities (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      source_platform TEXT NOT NULL,
+      source_url TEXT,
+      raw_text TEXT NOT NULL,
+      title TEXT NOT NULL,
+      target_niche TEXT NOT NULL,
+      pain_point_analysis TEXT NOT NULL,
+      build_once_sell_infinite INTEGER NOT NULL DEFAULT 0,
+      score INTEGER NOT NULL,
+      priority TEXT NOT NULL,
+      tags TEXT DEFAULT '',
+      blueprint TEXT DEFAULT '',
+      has_blueprint INTEGER NOT NULL DEFAULT 0,
+      analysis_json TEXT NOT NULL,
+      tokens_in INTEGER NOT NULL DEFAULT 0,
+      tokens_out INTEGER NOT NULL DEFAULT 0,
+      cost_usd REAL NOT NULL DEFAULT 0,
+      favorite INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE INDEX IF NOT EXISTS idx_opp_score ON opportunities(score DESC);
+    CREATE INDEX IF NOT EXISTS idx_opp_created ON opportunities(created_at DESC);
+  `);
 }
 
 // 检查 URL 是否已存在于数据库
@@ -45,6 +75,9 @@ function isTextExists(text: string): boolean {
 }
 
 async function main() {
+  // 初始化数据库
+  initDB();
+
   console.log("\n" + "=".repeat(80));
   console.log("🚀 100条增强版抓取（含去重）");
   console.log("=".repeat(80) + "\n");
