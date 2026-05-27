@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 import { config as loadEnv } from "dotenv";
-loadEnv({ path: ".env.local" });
+import path from "node:path";
+loadEnv({ path: path.join(process.cwd(), ".env.local") });
 
 import {
   HackerNewsSource,
@@ -96,7 +97,7 @@ async function main() {
   const allItems: RawItem[] = [];
   for (const src of sources) {
     try {
-      const items = await src.harvest({ limit: 30 }); // 每个源抓30条，然后去重
+      const items = await src.harvest({ limit: 50 }); // 每个源抓50条，然后去重（共200条）
       console.log(`  ✅ [${src.name}] ${items.length} 条`);
       allItems.push(...items);
     } catch (e) {
