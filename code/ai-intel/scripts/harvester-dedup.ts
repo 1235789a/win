@@ -83,7 +83,7 @@ async function main() {
   console.log("🚀 100条增强版抓取（含去重）");
   console.log("=".repeat(80) + "\n");
 
-  const MAX_ITEMS = 100;
+  const MAX_ITEMS = 200;
   const CONCURRENCY = 4;
   const sources = [
     new HackerNewsSource(),
