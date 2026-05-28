@@ -1,0 +1,346 @@
+[
+  {
+    "platform": "github",
+    "url": "https://github.com/openclaw/openclaw",
+    "title": "openclaw",
+    "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ",
+    "stars": 375246,
+    "language": "TypeScript",
+    "topics": [
+      "ai",
+      "assistant",
+      "crustacean",
+      "molty",
+      "openclaw",
+      "own-your-data",
+      "personal"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/affaan-m/ECC",
+    "title": "ECC",
+    "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
+    "stars": 196816,
+    "language": "JavaScript",
+    "topics": [
+      "ai-agents",
+      "anthropic",
+      "claude",
+      "claude-code",
+      "developer-tools",
+      "llm",
+      "mcp",
+      "productivity"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/NousResearch/hermes-agent",
+    "title": "hermes-agent",
+    "description": "The agent that grows with you",
+    "stars": 171121,
+    "language": "Python",
+    "topics": [
+      "ai",
+      "ai-agent",
+      "ai-agents",
+      "anthropic",
+      "chatgpt",
+      "claude",
+      "claude-code",
+      "clawdbot",
+      "codex",
+      "hermes",
+      "hermes-agent",
+      "llm",
+      "moltbot",
+      "nous-research",
+      "openai",
+      "openclaw"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/DigitalPlatDev/FreeDomain",
+    "title": "FreeDomain",
+    "description": "DigitalPlat FreeDomain: Free Domain For Everyone",
+    "stars": 170169,
+    "language": "HTML",
+    "topics": [
+      "digitalplat",
+      "domain",
+      "domain-platform",
+      "domainname",
+      "domains",
+      "free",
+      "freedomain"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools",
+    "title": "system-prompts-and-models-of-ai-tools",
+    "description": "FULL Augment Code, Claude Code, Cluely, CodeBuddy, Comet, Cursor, Devin AI, Junie, Kiro, Leap.new, Lovable, Manus, NotionAI, Orchids.app, Perplexity, Poke, Qoder, Replit, Same.dev, Trae, Traycer AI, VSCode Agent, Warp.dev, Windsurf, Xcode, Z.ai Code, Dia & v0. (And other Open Sourced) System Prompts, Internal Tools & AI Models",
+    "stars": 138407,
+    "language": null,
+    "topics": [
+      "ai",
+      "bolt",
+      "cluely",
+      "copilot",
+      "cursor",
+      "cursorai",
+      "devin",
+      "github-copilot",
+      "lovable",
+      "open-source",
+      "perplexity",
+      "replit",
+      "system-prompts",
+      "trae",
+      "trae-ai",
+      "trae-ide",
+      "v0",
+      "vscode",
+      "windsurf",
+      "windsurf-ai"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/anthropics/claude-code",
+    "title": "claude-code",
+    "description": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
+    "stars": 127238,
+    "language": "Python",
+    "topics": []
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/microsoft/markitdown",
+    "title": "markitdown",
+    "description": "Python tool for converting files and office documents to Markdown.",
+    "stars": 126944,
+    "language": "Python",
+    "topics": [
+      "autogen",
+      "autogen-extension",
+      "langchain",
+      "markdown",
+      "microsoft-office",
+      "openai",
+      "pdf"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/firecrawl/firecrawl",
+    "title": "firecrawl",
+    "description": "🔥 Search, scrape, and clean the web for AI agents.",
+    "stars": 125555,
+    "language": "TypeScript",
+    "topics": [
+      "ai",
+      "ai-agents",
+      "ai-crawler",
+      "ai-scraping",
+      "ai-search",
+      "crawler",
+      "data-extraction",
+      "html-to-markdown",
+      "llm",
+      "markdown",
+      "scraper",
+      "scraping",
+      "web-crawler",
+      "web-data",
+      "web-data-extraction",
+      "web-scraper",
+      "web-scraping",
+      "web-search",
+      "webscraping"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/Shubhamsaboo/awesome-llm-apps",
+    "title": "awesome-llm-apps",
+    "description": "100+ AI Agent & RAG apps you can actually run — clone, customize, ship.",
+    "stars": 111982,
+    "language": "Python",
+    "topics": [
+      "agents",
+      "llms",
+      "python",
+      "rag"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/mattpocock/skills",
+    "title": "skills",
+    "description": "Skills for Real Engineers. Straight from my .claude directory.",
+    "stars": 109663,
+    "language": "Shell",
+    "topics": []
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/github/spec-kit",
+    "title": "spec-kit",
+    "description": "💫 Toolkit to help you get started with Spec-Driven Development",
+    "stars": 106685,
+    "language": "Python",
+    "topics": [
+      "ai",
+      "copilot",
+      "development",
+      "engineering",
+      "prd",
+      "spec",
+      "spec-driven"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/msitarzewski/agency-agents",
+    "title": "agency-agents",
+    "description": "A complete AI agency at your fingertips - From frontend wizards to Reddit community ninjas, from whimsy injectors to reality checkers. Each agent is a specialized expert with personality, processes, and proven deliverables.",
+    "stars": 105701,
+    "language": "Shell",
+    "topics": []
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/google-gemini/gemini-cli",
+    "title": "gemini-cli",
+    "description": "An open-source AI agent that brings the power of Gemini directly into your terminal.",
+    "stars": 104685,
+    "language": "TypeScript",
+    "topics": [
+      "ai",
+      "ai-agents",
+      "cli",
+      "gemini",
+      "gemini-api",
+      "mcp-client",
+      "mcp-server"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/browser-use/browser-use",
+    "title": "browser-use",
+    "description": "🌐 Make websites accessible for AI agents. Automate tasks online with ease.",
+    "stars": 95993,
+    "language": "Python",
+    "topics": [
+      "ai-agents",
+      "ai-tools",
+      "browser-automation",
+      "browser-use",
+      "llm",
+      "playwright",
+      "python"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/punkpeye/awesome-mcp-servers",
+    "title": "awesome-mcp-servers",
+    "description": "A collection of MCP servers.",
+    "stars": 88072,
+    "language": null,
+    "topics": [
+      "ai",
+      "mcp"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/openai/codex",
+    "title": "codex",
+    "description": "Lightweight coding agent that runs in your terminal",
+    "stars": 86556,
+    "language": "Rust",
+    "topics": []
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/modelcontextprotocol/servers",
+    "title": "servers",
+    "description": "Model Context Protocol Servers",
+    "stars": 86393,
+    "language": "TypeScript",
+    "topics": []
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+    "title": "ui-ux-pro-max-skill",
+    "description": "An AI SKILL that provide design intelligence for building professional UI/UX multiple platforms",
+    "stars": 84074,
+    "language": "Python",
+    "topics": [
+      "ai-skills",
+      "antigravity",
+      "claude",
+      "claude-code",
+      "codex",
+      "command-line",
+      "copilot",
+      "cursor-ai",
+      "html5",
+      "kiro",
+      "landing-page",
+      "mobile-ui",
+      "qoder",
+      "react",
+      "tailwindcss",
+      "trae",
+      "ui-design",
+      "uikit",
+      "windsurf-ai"
+    ]
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/karpathy/autoresearch",
+    "title": "autoresearch",
+    "description": "AI agents running research on single-GPU nanochat training automatically",
+    "stars": 83861,
+    "language": "Python",
+    "topics": []
+  },
+  {
+    "platform": "github",
+    "url": "https://github.com/farion1231/cc-switch",
+    "title": "cc-switch",
+    "description": "A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode, OpenClaw, Gemini CLI & Hermes Agent. Only official website: ccswitch.io",
+    "stars": 83502,
+    "language": "Rust",
+    "topics": [
+      "ai-tools",
+      "claude-code",
+      "codex",
+      "desktop-app",
+      "hermes",
+      "hermes-agent",
+      "mcp",
+      "minimax",
+      "omo",
+      "open-source",
+      "openclaw",
+      "openclaw-ui",
+      "opencode",
+      "provider-management",
+      "rust",
+      "skills",
+      "skills-management",
+      "tauri",
+      "typescript",
+      "wsl-support"
+    ]
+  }
+]
