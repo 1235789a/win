@@ -262,7 +262,7 @@ function PaymentForm({ amount, onSuccess }: { amount: number; onSuccess: () => v
     <form onSubmit={handleSubmit}>
       <PaymentElement />
       <button type="submit" disabled={!stripe}>
-        支付 ${amount}
+        支付 {amount} USDT
       </button>
     </form>
   );
