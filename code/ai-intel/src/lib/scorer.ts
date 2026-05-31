@@ -19,7 +19,7 @@ export function scoreToPriority(score: number): Priority {
   return "P3";
 }
 
-// 智能调整分数：确保只有接受 USDT、垂直细分、低竞争、低投入的方案才能拿到高分
+// 智能调整分数：确保只有接受 USDT、垂直细分、低竞争、低投入、快速增长的方案才能拿到高分
 export function adjustScore(originalScore: number, targetNiche: string, buildOnceSellInfinite: boolean): number {
   let adjusted = originalScore;
   
@@ -45,9 +45,12 @@ export function adjustScore(originalScore: number, targetNiche: string, buildOnc
     adjusted = Math.min(adjusted + 5, 100);
   }
   
-  // 鼓励低投入、低竞争的词汇
+  // 鼓励低投入、低竞争、快速增长的词汇
   const lowCompetitionKeywords = /没有做|没人做|很少人做|没有解决方案|缺少|空白|小众|利基|niche|untapped/i;
   const lowEffortKeywords = /2周|2-4周|简单|容易|轻量|低成本|MVP|小工具/i;
+  const rapidGrowthKeywords = /快速增长|增长300|增长200|增长100|持续上升|爆发|爆炸式|trending|exploding|growing fast/i;
+  const moderateGrowthKeywords = /增长良好|上升趋势|增长100|growing steadily/i;
+  const declineKeywords = /停滞|下降|衰退|declining|stagnant/i;
   
   if (lowCompetitionKeywords.test(targetNiche) && adjusted >= 50) {
     adjusted = Math.min(adjusted + 15, 100); // 低竞争市场 +15分
@@ -55,6 +58,18 @@ export function adjustScore(originalScore: number, targetNiche: string, buildOnc
   
   if (lowEffortKeywords.test(targetNiche) && adjusted >= 50) {
     adjusted = Math.min(adjusted + 10, 100); // 低投入 +10分
+  }
+  
+  if (rapidGrowthKeywords.test(targetNiche) && adjusted >= 50) {
+    adjusted = Math.min(adjusted + 20, 100); // 快速增长 +20分
+  }
+  
+  if (moderateGrowthKeywords.test(targetNiche) && adjusted >= 50) {
+    adjusted = Math.min(adjusted + 10, 100); // 良好增长 +10分
+  }
+  
+  if (declineKeywords.test(targetNiche) && adjusted >= 50) {
+    adjusted = Math.max(adjusted - 25, 0); // 增长停滞/下降 -25分
   }
   
   return clampScore(adjusted);
