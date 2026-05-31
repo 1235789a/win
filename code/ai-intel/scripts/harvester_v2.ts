@@ -20,7 +20,7 @@ import {
 } from "../src/lib/sources";
 import type { RawItem, SourceAdapter } from "../src/lib/sources";
 import { twoStepAnalyze } from "../src/lib/two-step-analyze";
-import { insertOpportunity } from "../src/lib/db";
+import { insertOpportunity, existsOpportunity } from "../src/lib/db";
 import { assignClusterForOpportunity } from "../src/lib/clustering";
 import { recordMention } from "../src/lib/trends";
 import type { Opportunity } from "../src/lib/types";
@@ -121,6 +121,13 @@ async function main() {
     const label = `[${String(idx + 1).padStart(3)}/${toAnalyze.length}]`;
     const t1 = Date.now();
     try {
+      // 先检查数据库是否已存在，避免重复
+      if (existsOpportunity(item.text, item.url)) {
+        console.log(`${label} skip (duplicate) | ${item.text.slice(0, 50)}`);
+        okCount++;
+        return;
+      }
+      
       const r = await twoStepAnalyze(item.platform, item.text, {
         skipBlueprint: SKIP_BLUEPRINT,
       });

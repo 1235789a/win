@@ -15,23 +15,46 @@
 
 import { askJSON, type AskOptions } from "@/lib/ai";
 import { SYSTEM_PROMPT, ANALYSIS_USER_PROMPT } from "@/lib/prompts";
-import { clampScore, scoreToPriority } from "@/lib/scorer";
+import { clampScore, scoreToPriority, adjustScore } from "@/lib/scorer";
 import type { AnalysisResult, SourcePlatform } from "@/lib/types";
 
 // ─── Step 1 的精简 prompt ───
 
 const STEP1_SYSTEM = `你是一名独立产品创始人。快速判断一条帖子是否包含可行的产品机会。
 
-【评分标准 - Build Once / Sell Infinite / Zero Support】
-命中 4-5 → 75-100；命中 2-3 → 40-74；其他 → < 40。
+【评分标准（必须严格执行）】
+90-100 分（极品）：
+- 极垂直细分市场（不是所有开发者，是"北美 Upwork 月入 $3k-$10k 的网页开发者"这种）
+- 痛点非常强烈（用户主动在找解决方案，愿意见立刻付费）
+- Build Once / Sell Infinite / Zero Support 命中 5/5
+- 愿意接受 USDT 支付
 
-【灰产禁令】绕过风控/伪造/爬付费数据 → score ≤ 20。
+75-89 分（优秀）：
+- 垂直细分市场
+- 痛点清晰可验证
+- Build Once / Sell Infinite / Zero Support 命中 4/5
+- 愿意接受 USDT 支付
+
+60-74 分（一般）：
+- 市场偏泛但有明确子群
+- 痛点存在但可能不紧急
+- Build Once / Sell Infinite / Zero Support 命中 2-3/5
+
+<40 分（无效）：
+- 泛泛而谈的通用问题
+- 没有明确的付费意愿
+- 不接受加密货币
+
+【扣分规则】
+- target_niche 太泛 → 扣 20-30 分
+- 没有包含愿意接受 USDT → 扣 30 分
+- 灰产（绕过风控/伪造/爬付费数据）→ score ≤ 20
 
 【输出要求】
 严格 JSON，不带围栏。只输出以下字段，不输出 blueprint：
 {
   "title": "产品名（中文 8-20 字）",
-  "target_niche": "具体子行业+地域",
+  "target_niche": "具体子行业+地域+接受USDT+使用场景+用户画像",
   "score": 0-100,
   "tags": ["tag1","tag2","tag3"],
   "pain_summary": "一句话概括痛点（30-60 字）",
@@ -120,15 +143,22 @@ export async function quickScore(
     model: opts?.model,
   });
 
+  const rawScore = clampScore(r.data.score);
+  const targetNiche = (r.data.target_niche ?? "未指定").toString().slice(0, 120);
+  const buildOnce = !!r.data.build_once_sell_infinite;
+  
+  // 使用智能评分调整
+  const finalScore = adjustScore(rawScore, targetNiche, buildOnce);
+  
   return {
     title: (r.data.title ?? "未命名").toString().slice(0, 80),
-    target_niche: (r.data.target_niche ?? "未指定").toString().slice(0, 120),
-    score: clampScore(r.data.score),
+    target_niche: targetNiche,
+    score: finalScore,
     tags: Array.isArray(r.data.tags)
       ? r.data.tags.map(String).filter(Boolean).slice(0, 8)
       : [],
     pain_summary: (r.data.pain_summary ?? "").toString().slice(0, 200),
-    build_once_sell_infinite: !!r.data.build_once_sell_infinite,
+    build_once_sell_infinite: buildOnce,
     seo_keyword: (r.data.seo_keyword ?? "").toString().slice(0, 60),
     usage: {
       tokens_in: r.usage.tokens_in,

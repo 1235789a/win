@@ -303,6 +303,28 @@ export function deleteOpportunity(id: number): void {
   getDB().prepare("DELETE FROM opportunities WHERE id = ?").run(id);
 }
 
+// 检查是否已有相似内容（基于原始文本或URL去重）
+export function existsOpportunity(rawText: string, url?: string): boolean {
+  const db = getDB();
+  const textFp = rawText.slice(0, 200).toLowerCase().replace(/\s+/g, " ").trim();
+  
+  if (url) {
+    // 先检查URL是否已存在
+    const byUrl = db
+      .prepare("SELECT id FROM opportunities WHERE source_url = ?")
+      .get(url);
+    if (byUrl) return true;
+  }
+  
+  // 再检查文本指纹是否已存在（模糊匹配）
+  const byText = db
+    .prepare(
+      "SELECT id FROM opportunities WHERE raw_text LIKE ? LIMIT 1"
+    )
+    .get(`%${textFp}%`);
+  return !!byText;
+}
+
 // ---------- Artifacts ----------
 
 export function upsertArtifact(a: Omit<Artifact, "id" | "created_at">): number {
