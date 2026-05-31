@@ -29,6 +29,7 @@ const MAX_ITEMS = Number(process.env.MAX_ITEMS ?? 30);
 const CONCURRENCY = Number(process.env.CONCURRENCY ?? 2);
 const SKIP_BLUEPRINT = process.env.SKIP_BLUEPRINT === "1";
 const SOURCES_STR = process.env.SOURCES ?? "hn,reddit,upwork,github,producthunt,bhw,v2ex,indiehackers,devto,twitter,trends";
+const MAX_AGE_HOURS = Number(process.env.MAX_AGE_HOURS ?? 4380); // 默认 6 个月 = 180 天
 
 const t0 = Date.now();
 
@@ -89,7 +90,7 @@ async function main() {
   const sources = getSources();
   console.log(`\n🚀 harvester_v2`);
   console.log(`  sources=${sources.map((s) => s.name).join(",")}`);
-  console.log(`  max_items=${MAX_ITEMS}  concurrency=${CONCURRENCY}  skip_blueprint=${SKIP_BLUEPRINT}`);
+  console.log(`  max_items=${MAX_ITEMS}  concurrency=${CONCURRENCY}  skip_blueprint=${SKIP_BLUEPRINT}  max_age_hours=${MAX_AGE_HOURS}`);
   console.log("");
 
   // Step 1: 抓取
@@ -97,7 +98,7 @@ async function main() {
   const allItems: RawItem[] = [];
   for (const src of sources) {
     try {
-      const items = await src.harvest({ limit: Math.ceil(MAX_ITEMS / sources.length), maxAgeHours: 48 });
+      const items = await src.harvest({ limit: Math.ceil(MAX_ITEMS / sources.length), maxAgeHours: MAX_AGE_HOURS });
       console.log(`  [${src.name}] ${items.length} items`);
       allItems.push(...items);
     } catch (err: any) {
