@@ -19,7 +19,7 @@ export function scoreToPriority(score: number): Priority {
   return "P3";
 }
 
-// 智能调整分数：确保只有接受 USDT 且垂直细分的方案才能拿到高分
+// 智能调整分数：确保只有接受 USDT、垂直细分、低竞争、低投入的方案才能拿到高分
 export function adjustScore(originalScore: number, targetNiche: string, buildOnceSellInfinite: boolean): number {
   let adjusted = originalScore;
   
@@ -43,6 +43,18 @@ export function adjustScore(originalScore: number, targetNiche: string, buildOnc
   // Build Once Sell Infinite 加分
   if (buildOnceSellInfinite && adjusted >= 50) {
     adjusted = Math.min(adjusted + 5, 100);
+  }
+  
+  // 鼓励低投入、低竞争的词汇
+  const lowCompetitionKeywords = /没有做|没人做|很少人做|没有解决方案|缺少|空白|小众|利基|niche|untapped/i;
+  const lowEffortKeywords = /2周|2-4周|简单|容易|轻量|低成本|MVP|小工具/i;
+  
+  if (lowCompetitionKeywords.test(targetNiche) && adjusted >= 50) {
+    adjusted = Math.min(adjusted + 15, 100); // 低竞争市场 +15分
+  }
+  
+  if (lowEffortKeywords.test(targetNiche) && adjusted >= 50) {
+    adjusted = Math.min(adjusted + 10, 100); // 低投入 +10分
   }
   
   return clampScore(adjusted);
