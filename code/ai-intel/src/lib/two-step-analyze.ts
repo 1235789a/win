@@ -161,6 +161,7 @@ const STEP1_SYSTEM = `你是一名**海外 AI 工具站套利猎手**。你的�
 严格 JSON，不带围栏。必须包含所有字段：
 {
   "title": "产品名（英文，8-25字，如 'AI Resume Builder'）",
+  "target_niche": "目标垂直细分领域（如 'Developers', 'Content Creators', 'Freelancers', 'Crypto Traders'）",
   "score": 0-100,
   "pain_summary": "一句话概括痛点（30-60字）",
   "buy_signal_score": 0-100,
@@ -254,6 +255,7 @@ ${rawText.slice(0, 2000)}
 
 export interface Step1Result {
   title: string;
+  target_niche: string;
   score: number;
   pain_summary: string;
   buy_signal_score: number;
@@ -275,6 +277,7 @@ export interface Step1Result {
 
 export interface TwoStepResult {
   title: string;
+  target_niche: string;
   pain_point_analysis: string;
   score: number;
   priority: string;
@@ -306,6 +309,7 @@ export async function quickScore(
 ): Promise<Step1Result> {
   const r = await askJSON<{
     title?: string;
+    target_niche?: string;
     score?: number;
     pain_summary?: string;
     buy_signal_score?: number;
@@ -332,6 +336,7 @@ export async function quickScore(
 
   return {
     title: (r.data.title ?? "未命名").toString().slice(0, 80),
+    target_niche: (r.data.target_niche ?? "General").toString().slice(0, 50),
     score: clampScore(r.data.score),
     pain_summary: (r.data.pain_summary ?? "").toString().slice(0, 200),
     buy_signal_score: clampScore(r.data.buy_signal_score),
@@ -433,6 +438,7 @@ export async function twoStepAnalyze(
 
   return {
     title: s1.title,
+    target_niche: s1.target_niche,
     pain_point_analysis: s1.pain_summary,
     score: s1.score,
     priority: scoreToPriority(s1.score),
