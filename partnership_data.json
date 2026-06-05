@@ -1,0 +1,272 @@
+[
+  {
+    "project_name": "Base",
+    "project_url": "https://example.com/base",
+    "post_url": "https://example.com/post/468743",
+    "image_url": "",
+    "date": "2026-04-09T00:10:06.889104",
+    "engagement": {
+      "likes": 4569,
+      "retweets": 919,
+      "replies": 185,
+      "views": 8000
+    },
+    "asset_type": "Partnership",
+    "post_text": "Partnership announcement: Base x ProtocolName"
+  },
+  {
+    "project_name": "Compound",
+    "project_url": "https://example.com/compound",
+    "post_url": "https://example.com/post/417217",
+    "image_url": "https://example.com/images/26.jpg",
+    "date": "2026-03-22T00:10:06.889163",
+    "engagement": {
+      "likes": 649,
+      "retweets": 391,
+      "replies": 99,
+      "views": 24847
+    },
+    "asset_type": "Partnership",
+    "post_text": "Strategic partnership between Compound and ExchangeName"
+  },
+  {
+    "project_name": "Polygon",
+    "project_url": "https://example.com/polygon",
+    "post_url": "https://example.com/post/941792",
+    "image_url": "",
+    "date": "2026-03-11T00:10:06.889091",
+    "engagement": {
+      "likes": 4337,
+      "retweets": 48,
+      "replies": 263,
+      "views": 36152
+    },
+    "asset_type": "Partnership",
+    "post_text": "Polygon teams up with leading Web3 platform"
+  },
+  {
+    "project_name": "Dogecoin",
+    "project_url": "https://example.com/dogecoin",
+    "post_url": "https://example.com/post/263900",
+    "image_url": "https://example.com/images/7.jpg",
+    "date": "2026-05-03T00:10:06.889152",
+    "engagement": {
+      "likes": 4834,
+      "retweets": 718,
+      "replies": 130,
+      "views": 3548
+    },
+    "asset_type": "Partnership",
+    "post_text": "Strategic partnership between Dogecoin and ExchangeName"
+  },
+  {
+    "project_name": "Cardano",
+    "project_url": "https://example.com/cardano",
+    "post_url": "https://example.com/post/399572",
+    "image_url": "https://example.com/images/59.jpg",
+    "date": "2026-03-20T00:10:06.889129",
+    "engagement": {
+      "likes": 370,
+      "retweets": 712,
+      "replies": 92,
+      "views": 15044
+    },
+    "asset_type": "Partnership",
+    "post_text": "Partnership announcement: Cardano x ProtocolName"
+  },
+  {
+    "project_name": "Arbitrum",
+    "project_url": "https://example.com/arbitrum",
+    "post_url": "https://example.com/post/531943",
+    "image_url": "https://example.com/images/97.jpg",
+    "date": "2026-04-29T00:10:06.889086",
+    "engagement": {
+      "likes": 4450,
+      "retweets": 477,
+      "replies": 294,
+      "views": 11628
+    },
+    "asset_type": "Partnership",
+    "post_text": "Arbitrum teams up with leading Web3 platform"
+  },
+  {
+    "project_name": "Compound",
+    "project_url": "https://example.com/compound",
+    "post_url": "https://example.com/post/794787",
+    "image_url": "",
+    "date": "2026-03-15T00:10:06.889169",
+    "engagement": {
+      "likes": 2475,
+      "retweets": 729,
+      "replies": 469,
+      "views": 27535
+    },
+    "asset_type": "Partnership",
+    "post_text": "Partnership announcement: Compound x ProtocolName"
+  },
+  {
+    "project_name": "Dogecoin",
+    "project_url": "https://example.com/dogecoin",
+    "post_url": "https://example.com/post/153957",
+    "image_url": "",
+    "date": "2026-05-15T00:10:06.889115",
+    "engagement": {
+      "likes": 623,
+      "retweets": 85,
+      "replies": 220,
+      "views": 11716
+    },
+    "asset_type": "Partnership",
+    "post_text": "We're thrilled to announce our partnership with Dogecoin"
+  },
+  {
+    "project_name": "The Sandbox",
+    "project_url": "https://example.com/the sandbox",
+    "post_url": "https://example.com/post/151101",
+    "image_url": "https://example.com/images/1.jpg",
+    "date": "2026-05-21T00:10:06.889110",
+    "engagement": {
+      "likes": 2849,
+      "retweets": 901,
+      "replies": 413,
+      "views": 25462
+    },
+    "asset_type": "Partnership",
+    "post_text": "The Sandbox teams up with leading Web3 platform"
+  },
+  {
+    "project_name": "Flow",
+    "project_url": "https://example.com/flow",
+    "post_url": "https://example.com/post/597110",
+    "image_url": "https://example.com/images/10.jpg",
+    "date": "2026-03-09T00:10:06.889175",
+    "engagement": {
+      "likes": 537,
+      "retweets": 727,
+      "replies": 286,
+      "views": 30124
+    },
+    "asset_type": "Partnership",
+    "post_text": "Strategic partnership between Flow and ExchangeName"
+  },
+  {
+    "project_name": "Ethereum",
+    "project_url": "https://example.com/ethereum",
+    "post_url": "https://example.com/post/980422",
+    "image_url": "https://example.com/images/21.jpg",
+    "date": "2026-04-10T00:10:06.889097",
+    "engagement": {
+      "likes": 2838,
+      "retweets": 818,
+      "replies": 197,
+      "views": 36727
+    },
+    "asset_type": "Partnership",
+    "post_text": "Partnership announcement: Ethereum x ProtocolName"
+  },
+  {
+    "project_name": "Bitcoin",
+    "project_url": "https://example.com/bitcoin",
+    "post_url": "https://example.com/post/829473",
+    "image_url": "",
+    "date": "2026-04-17T00:10:06.889157",
+    "engagement": {
+      "likes": 1054,
+      "retweets": 319,
+      "replies": 375,
+      "views": 47125
+    },
+    "asset_type": "Partnership",
+    "post_text": "We're thrilled to announce our partnership with Bitcoin"
+  },
+  {
+    "project_name": "Enjin",
+    "project_url": "https://example.com/enjin",
+    "post_url": "https://example.com/post/567028",
+    "image_url": "https://example.com/images/55.jpg",
+    "date": "2026-04-12T00:10:06.889122",
+    "engagement": {
+      "likes": 481,
+      "retweets": 443,
+      "replies": 185,
+      "views": 22559
+    },
+    "asset_type": "Partnership",
+    "post_text": "Enjin teams up with leading Web3 platform"
+  },
+  {
+    "project_name": "Cardano",
+    "project_url": "https://example.com/cardano",
+    "post_url": "https://example.com/post/106171",
+    "image_url": "https://example.com/images/15.jpg",
+    "date": "2026-05-27T00:10:06.889075",
+    "engagement": {
+      "likes": 698,
+      "retweets": 630,
+      "replies": 309,
+      "views": 23341
+    },
+    "asset_type": "Partnership",
+    "post_text": "Huge news! Cardano partners with major DeFi protocol"
+  },
+  {
+    "project_name": "Axie Infinity",
+    "project_url": "https://example.com/axie infinity",
+    "post_url": "https://example.com/post/329956",
+    "image_url": "https://example.com/images/74.jpg",
+    "date": "2026-04-21T00:10:06.889080",
+    "engagement": {
+      "likes": 2890,
+      "retweets": 370,
+      "replies": 285,
+      "views": 44711
+    },
+    "asset_type": "Partnership",
+    "post_text": "Partnership announcement: Axie Infinity x ProtocolName"
+  },
+  {
+    "project_name": "Polkadot",
+    "project_url": "https://example.com/polkadot",
+    "post_url": "https://example.com/post/729184",
+    "image_url": "",
+    "date": "2026-05-30T00:10:06.889134",
+    "engagement": {
+      "likes": 4266,
+      "retweets": 830,
+      "replies": 418,
+      "views": 33550
+    },
+    "asset_type": "Partnership",
+    "post_text": "Partnership announcement: Polkadot x ProtocolName"
+  },
+  {
+    "project_name": "Pepe",
+    "project_url": "https://example.com/pepe",
+    "post_url": "https://example.com/post/723807",
+    "image_url": "",
+    "date": "2026-06-05T00:10:06.889140",
+    "engagement": {
+      "likes": 2923,
+      "retweets": 806,
+      "replies": 116,
+      "views": 36132
+    },
+    "asset_type": "Partnership",
+    "post_text": "Pepe teams up with leading Web3 platform"
+  },
+  {
+    "project_name": "Solana",
+    "project_url": "https://example.com/solana",
+    "post_url": "https://example.com/post/400224",
+    "image_url": "",
+    "date": "2026-05-10T00:10:06.889146",
+    "engagement": {
+      "likes": 2801,
+      "retweets": 390,
+      "replies": 458,
+      "views": 28143
+    },
+    "asset_type": "Partnership",
+    "post_text": "Huge news! Solana partners with major DeFi protocol"
+  }
+]

@@ -1,0 +1,302 @@
+[
+  {
+    "project_name": "MakerDAO",
+    "project_url": "https://example.com/makerdao",
+    "post_url": "https://example.com/post/936928",
+    "image_url": "https://example.com/images/70.jpg",
+    "date": "2026-05-04T00:10:06.889319",
+    "engagement": {
+      "likes": 289,
+      "retweets": 307,
+      "replies": 436,
+      "views": 20177
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Huge giveaway: Win exclusive NFTs from MakerDAO"
+  },
+  {
+    "project_name": "Shiba Inu",
+    "project_url": "https://example.com/shiba inu",
+    "post_url": "https://example.com/post/697257",
+    "image_url": "",
+    "date": "2026-05-26T00:10:06.889397",
+    "engagement": {
+      "likes": 2207,
+      "retweets": 566,
+      "replies": 86,
+      "views": 36517
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from Shiba Inu - join now!"
+  },
+  {
+    "project_name": "Pepe",
+    "project_url": "https://example.com/pepe",
+    "post_url": "https://example.com/post/878447",
+    "image_url": "",
+    "date": "2026-03-26T00:10:06.889386",
+    "engagement": {
+      "likes": 2738,
+      "retweets": 755,
+      "replies": 96,
+      "views": 40015
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Participate in our Pepe giveaway and win big prizes"
+  },
+  {
+    "project_name": "SushiSwap",
+    "project_url": "https://example.com/sushiswap",
+    "post_url": "https://example.com/post/633839",
+    "image_url": "",
+    "date": "2026-04-02T00:10:06.889308",
+    "engagement": {
+      "likes": 1915,
+      "retweets": 796,
+      "replies": 385,
+      "views": 35905
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from SushiSwap - join now!"
+  },
+  {
+    "project_name": "Litecoin",
+    "project_url": "https://example.com/litecoin",
+    "post_url": "https://example.com/post/481220",
+    "image_url": "https://example.com/images/37.jpg",
+    "date": "2026-04-07T00:10:06.889404",
+    "engagement": {
+      "likes": 4582,
+      "retweets": 286,
+      "replies": 331,
+      "views": 2231
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Huge giveaway: Win exclusive NFTs from Litecoin"
+  },
+  {
+    "project_name": "Floki",
+    "project_url": "https://example.com/floki",
+    "post_url": "https://example.com/post/935560",
+    "image_url": "https://example.com/images/41.jpg",
+    "date": "2026-05-22T00:10:06.889330",
+    "engagement": {
+      "likes": 4745,
+      "retweets": 529,
+      "replies": 476,
+      "views": 3301
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from Floki - join now!"
+  },
+  {
+    "project_name": "Bonk",
+    "project_url": "https://example.com/bonk",
+    "post_url": "https://example.com/post/118036",
+    "image_url": "",
+    "date": "2026-05-16T00:10:06.889313",
+    "engagement": {
+      "likes": 901,
+      "retweets": 329,
+      "replies": 189,
+      "views": 22359
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from Bonk - join now!"
+  },
+  {
+    "project_name": "BCH",
+    "project_url": "https://example.com/bch",
+    "post_url": "https://example.com/post/408619",
+    "image_url": "https://example.com/images/64.jpg",
+    "date": "2026-05-29T00:10:06.889380",
+    "engagement": {
+      "likes": 3226,
+      "retweets": 555,
+      "replies": 144,
+      "views": 27290
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Giving away $10,000 worth of BCH tokens to celebrate!"
+  },
+  {
+    "project_name": "Avalanche",
+    "project_url": "https://example.com/avalanche",
+    "post_url": "https://example.com/post/113818",
+    "image_url": "https://example.com/images/6.jpg",
+    "date": "2026-05-24T00:10:06.889348",
+    "engagement": {
+      "likes": 3926,
+      "retweets": 339,
+      "replies": 10,
+      "views": 35649
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Participate in our Avalanche giveaway and win big prizes"
+  },
+  {
+    "project_name": "Dash",
+    "project_url": "https://example.com/dash",
+    "post_url": "https://example.com/post/277667",
+    "image_url": "",
+    "date": "2026-05-08T00:10:06.889375",
+    "engagement": {
+      "likes": 4198,
+      "retweets": 645,
+      "replies": 155,
+      "views": 7332
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from Dash - join now!"
+  },
+  {
+    "project_name": "Ripple",
+    "project_url": "https://example.com/ripple",
+    "post_url": "https://example.com/post/547974",
+    "image_url": "",
+    "date": "2026-05-01T00:10:06.889303",
+    "engagement": {
+      "likes": 1722,
+      "retweets": 486,
+      "replies": 33,
+      "views": 41822
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Community giveaway: 100 lucky winners get Ripple rewards"
+  },
+  {
+    "project_name": "Pepe",
+    "project_url": "https://example.com/pepe",
+    "post_url": "https://example.com/post/532113",
+    "image_url": "https://example.com/images/35.jpg",
+    "date": "2026-05-09T00:10:06.889363",
+    "engagement": {
+      "likes": 2334,
+      "retweets": 865,
+      "replies": 417,
+      "views": 10052
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Community giveaway: 100 lucky winners get Pepe rewards"
+  },
+  {
+    "project_name": "Zcash",
+    "project_url": "https://example.com/zcash",
+    "post_url": "https://example.com/post/626665",
+    "image_url": "https://example.com/images/67.jpg",
+    "date": "2026-04-01T00:10:06.889297",
+    "engagement": {
+      "likes": 3916,
+      "retweets": 266,
+      "replies": 462,
+      "views": 39162
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from Zcash - join now!"
+  },
+  {
+    "project_name": "Nano",
+    "project_url": "https://example.com/nano",
+    "post_url": "https://example.com/post/657549",
+    "image_url": "https://example.com/images/90.jpg",
+    "date": "2026-05-25T00:10:06.889410",
+    "engagement": {
+      "likes": 1500,
+      "retweets": 828,
+      "replies": 127,
+      "views": 32018
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Community giveaway: 100 lucky winners get Nano rewards"
+  },
+  {
+    "project_name": "Axie Infinity",
+    "project_url": "https://example.com/axie infinity",
+    "post_url": "https://example.com/post/958035",
+    "image_url": "https://example.com/images/52.jpg",
+    "date": "2026-06-05T00:10:06.889336",
+    "engagement": {
+      "likes": 822,
+      "retweets": 569,
+      "replies": 223,
+      "views": 2226
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Giving away $10,000 worth of Axie Infinity tokens to celebrate!"
+  },
+  {
+    "project_name": "Dash",
+    "project_url": "https://example.com/dash",
+    "post_url": "https://example.com/post/184705",
+    "image_url": "https://example.com/images/28.jpg",
+    "date": "2026-06-02T00:10:06.889391",
+    "engagement": {
+      "likes": 3920,
+      "retweets": 349,
+      "replies": 245,
+      "views": 47491
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Participate in our Dash giveaway and win big prizes"
+  },
+  {
+    "project_name": "Stellar",
+    "project_url": "https://example.com/stellar",
+    "post_url": "https://example.com/post/757563",
+    "image_url": "https://example.com/images/60.jpg",
+    "date": "2026-05-18T00:10:06.889342",
+    "engagement": {
+      "likes": 4539,
+      "retweets": 57,
+      "replies": 147,
+      "views": 5547
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Celebration giveaway from Stellar - join now!"
+  },
+  {
+    "project_name": "ZkSync",
+    "project_url": "https://example.com/zksync",
+    "post_url": "https://example.com/post/307555",
+    "image_url": "https://example.com/images/71.jpg",
+    "date": "2026-03-11T00:10:06.889325",
+    "engagement": {
+      "likes": 1835,
+      "retweets": 668,
+      "replies": 466,
+      "views": 27721
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Community giveaway: 100 lucky winners get ZkSync rewards"
+  },
+  {
+    "project_name": "Arbitrum",
+    "project_url": "https://example.com/arbitrum",
+    "post_url": "https://example.com/post/789016",
+    "image_url": "https://example.com/images/23.jpg",
+    "date": "2026-05-03T00:10:06.889369",
+    "engagement": {
+      "likes": 2588,
+      "retweets": 792,
+      "replies": 103,
+      "views": 25410
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Community giveaway: 100 lucky winners get Arbitrum rewards"
+  },
+  {
+    "project_name": "Aave",
+    "project_url": "https://example.com/aave",
+    "post_url": "https://example.com/post/302117",
+    "image_url": "https://example.com/images/25.jpg",
+    "date": "2026-05-18T00:10:06.889354",
+    "engagement": {
+      "likes": 1180,
+      "retweets": 877,
+      "replies": 312,
+      "views": 9465
+    },
+    "asset_type": "Giveaway",
+    "post_text": "Giving away $10,000 worth of Aave tokens to celebrate!"
+  }
+]
