@@ -1,0 +1,19 @@
+# CryptoIntel Scraper Requirements
+
+# Core
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
+# Social Media CLI Tools
+twitter-cli>=0.8.0
+rdt-cli>=0.4.0
+
+# Video/Audio
+yt-dlp>=2024.0.0
+
+# RSS Feeds
+feedparser>=6.0.0
+
+# Utilities
+python-dateutil>=2.8.0
+urllib3>=2.0.0
