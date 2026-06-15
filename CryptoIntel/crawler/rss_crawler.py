@@ -40,13 +40,8 @@ def parse_entry(entry: Dict, feed_name: str) -> Dict:
     content = strip_html(summary)
     link = entry.get("link", "") or ""
 
-    # 解析时间
+    # 解析时间：feedparser 会把每个字段生成 *_parsed struct_time
     published_str = ""
-    for key in ("published", "updated", "pubDate"):
-        if entry.get(key):
-            parsed = entry.get(key_parsed)  # type: ignore
-            # feedparser 会生成 .published_parsed / .updated_parsed struct_time
-            break
     try:
         t = entry.get("published_parsed") or entry.get("updated_parsed")
         if t:
