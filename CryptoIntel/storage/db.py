@@ -98,7 +98,6 @@ def upsert_post(post: Dict[str, Any], db_path: str = "./data/cryptointel.db") ->
         post.get("date") or post.get("published_at"),
         now,
         json.dumps(post, ensure_ascii=False),
-        url,
     )
 
     if row:
@@ -108,7 +107,7 @@ def upsert_post(post: Dict[str, Any], db_path: str = "./data/cryptointel.db") ->
                 post_text=?, asset_type=?, likes=?, comments=?, views=?,
                 published_at=?, fetched_at=?, raw_json=?
                WHERE post_url=?""",
-            data,
+            data + (url,),
         )
         conn.commit()
         conn.close()
@@ -118,8 +117,8 @@ def upsert_post(post: Dict[str, Any], db_path: str = "./data/cryptointel.db") ->
             """INSERT INTO posts
                 (platform, project_name, project_url, image_url, post_text,
                  asset_type, likes, comments, views, published_at, fetched_at, raw_json, post_url)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            data,
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            data + (url,),
         )
         conn.commit()
         new_id = c.lastrowid
@@ -137,7 +136,7 @@ def insert_opportunity(opp: Dict[str, Any], db_path: str = "./data/cryptointel.d
             (post_id, name, target_niche, pain_point, solution, total_score,
              pain_to_money, traffic, seo, usdt, competition, build_speed,
              priority, blueprint_json, analyzed_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (
             opp.get("post_id"),
             opp.get("name"),
